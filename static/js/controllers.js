@@ -202,6 +202,7 @@ angular.module('controllers', [])
     }
   };
 
+  $scope.frontWord = {};
   // $scope.showFrontWord = true;
   // $scope.frontWord = $scope.words[0];
   // $scope.frontWord.backgroundHeight = $scope.mapCellImageHeight(1);

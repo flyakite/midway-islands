@@ -7,10 +7,6 @@ angular.module('backend', [
   'firebase',
   'app.config',
   'app.services',
-  'app.directives',
-  'user.services',
-  'chat.services',
-  'project.services',
   'controllers'
 ])
 
