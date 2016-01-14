@@ -1,0 +1,109 @@
+<div class="container-fluid main-container" >
+  <div class="main-container-background"></div>
+
+  <!-- input-profile-view -->
+  <div class="input-profile-view" ng-show="false && localState.inputProfile">
+    <div class="input-profile-view-background background-blur"
+      style="background-image:url('/static/img/old-paper2.png');min-height:1000px;">
+    </div>
+    <div class="input-profile-view-foreground padding-2">
+      <label>
+        <span class="bold">任務編號：{{island.number}}</span>
+      </label>
+      <div class="spacer"></div>
+      <div>
+        <span class="bold">任務目標：</span>
+        你被派往中途島的一個小島，蒐集完島上的情報，你要將你發現戰略價值較高的各地區塊的代號(英文單字)發無線電給其他探員，但是你不可以直接講代號，否則會被敵軍攔截破譯，發揮你的想像力，想像這些英文代號的關連詞，發送關連詞給其他探員讓他們可以猜到你的英文代號，發送的關連詞必須為一個簡短有意義的普通單詞。
+      </div>
+      <div class="spacer"></div>
+      <div>
+        <label for="nickname">
+          <span class="bold">探員匿稱：</span>
+          <input type="text" id="nickname" class="nickname" ng-model="currentUser.nickname">
+        </label>
+      </div>
+      <div class="spacer-2"></div>
+      <div>
+        <button class="btn btn-lg btn-warning" ng-click="agentIsReady()">準備完成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- agent-ready-list-view -->
+  <div class="agent-ready-list-view" ng-show="localState.agentReady">
+    <div class="agents-list">
+      <span class="mission-number">任務編號：{{island.number}}</span>
+      <div class="agent" ng-repeat="agent in island.agents">
+        {{agent.nickname}} 準備就緒
+      </div>
+    </div>
+    <div class="instruction-section">
+      <div ng-show="!island.state.isReady">
+        等待其他玩家....
+      </div>
+      <div ng-show="island.state.isReady">
+        <button class="btn btn-warning btn-lg" ng-click="startGame()">開始遊戲</button>
+      </div>
+      <div ng-show="localState.agentFull && island.state.playing">
+        這場已經滿了，請參加下一場。
+      </div>
+    </div>
+  </div>
+
+  <div class="game">
+    <div class="map">
+      <div class="map-background map-background-image" style="height:{{mapHeight}}px;"></div>
+      <div class="map-cell" ng-repeat="word in words" style="height:{{cellHeight}}px;" 
+        ng-click="onMapCellClicked($index, word)">
+        <div class="map-cell-background" 
+          style="height:{{cellHeight}}px;background-color:{{mapCellBackgroundColor(word)}}"></div>
+        <div class="my-score" ng-show="word.myScore">
+          {{word.myScore}}
+        </div>
+        <div class="other-score" ng-show="word.oScore">
+          {{word.oScore}}
+        </div>
+        <div class="word-card" style="height:{{cellHeight}}px;line-height:{{cellHeight}}px;">
+          {{word.name}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="front-cell-container" ng-show="showFrontWord" ng-click="onFrontCellClicked()">
+
+    <div class="front-cell-frame-background"></div>
+    <div class="front-cell-frame">
+
+      <div class="front-cell-background map-background-image" 
+        style="background-position:{{frontWord.backgroundWidth}}% {{frontWord.backgroundHeight}}%;">
+      </div>
+      <div class="front-cell">
+        <div class="front-word-background" 
+          style="background-color:{{mapCellBackgroundColor(frontWord)}}"></div>
+        <div class="front-word">
+          <div class="my-score" ng-show="frontWord.myScore">
+            當有其他探員猜出這個區域代號時，我可以得到 {{frontWord.myScore}} 分
+          </div>
+          <div class="other-score" ng-show="frontWord.oScore">
+            當有其他探員猜出這個區域代號時，她可以得到 {{frontWord.oScore}} 分
+          </div>
+          <div class="front-word-card">
+            {{frontWord.name}}
+          </div>
+          <div class="front-word-trans">
+            {{frontWord.trans}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+  
+</div>
+
+<script type="text/ng-template" id="input-profile-template.html">
+  <div class="modal-body">
+    
+  </div>
+</script>

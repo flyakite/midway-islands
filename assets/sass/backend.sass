@@ -1,0 +1,322 @@
+@import "bower_components/bootstrap-sass/assets/stylesheets/bootstrap"
+@import "bower_components/compass-mixins/lib/compass"
+@import "bower_components/compass-mixins/lib/animation/core"
+@import "bower_components/compass-mixins/lib/animation/animate"
+// @import "bower_components/compass-sass-mixins/lib/animation"
+// @import "bower_components/compass-sass-mixins/lib/compass/css3/animation"
+@import "_mixins"
+
+
+// general
+body
+  font-size: 16px
+  font-family: "文泉驛正黑","WenQuanYi Zen Hei","儷黑 Pro","LiHei Pro",Meiryo,"微軟正黑體","Microsoft JhengHei",sans-serif
+h1,h2,h3,h4,h5
+  font-weight: 700
+
+.padding
+  padding: 10px
+
+.padding-top
+  padding-top: 10px
+
+.padding-left
+  padding-left: 10px
+
+.padding-right
+  padding-right: 10px
+
+.padding-bottom
+  padding-bottom: 10px
+
+.padding-2
+  padding: 20px
+
+.no-padding
+  padding: 0 !important
+
+.no-border
+  border: 0 !important
+
+.margin
+  margin: 10px
+
+.no-margin
+  margin-top: 0 !important
+  margin-bottom: 0 !important
+  margin-right: 0 !important
+  margin-left: 0 !important
+
+.margin-top
+  margin-top: 10px !important
+
+.margin-top-2
+  margin-top: 20px !important
+
+.margin-right
+  margin-right: 10px !important
+
+.margin-bottom
+  margin-bottom: 10px !important
+
+.spacer
+  width: 100%
+  height: 10px
+
+.spacer-2
+  height: 20px
+
+.spacer-4
+  height: 40px
+
+.spacer-8
+  height: 80px
+
+.spacer-12
+  height: 120px
+
+.rounded
+  @include border-radius(5px)
+
+.rounded-top
+  @include border-top-radius(5px)
+
+.rounded-bottom
+  @include border-bottom-radius(5px)
+
+.bold
+  font-weight: 700 !important
+
+.container-fluid
+  padding-left: 0
+  padding-right: 0
+
+
+//game variable
+$sheight: 1000px
+$swidth: 600px
+
+.main-container
+  margin: 0 auto
+  max-width: $swidth
+  position: relative
+
+.main-container-background
+  background-image: url('/static/img/antiquemap2.png')
+  background-size: cover
+  background-repeat: no-repeat
+  min-height: $sheight
+  width: 100%
+  +filter(2px)
+  position: absolute
+  z-index: -1
+
+.background-blur
+  position: absolute
+  left: 0
+  right: 0
+  z-index: -1
+  display: block
+  background-repeat: no-repeat
+  background-size: contain
+
+// .foreground
+//   position: absolute
+//   left: 0
+//   right: 0
+//   z-index: 1
+
+.background-create-island
+  opacity: 0.2
+  @include filter(5px)
+  animation: slide 60s linear infinite
+
+$scale: 50px
++keyframes(slide)
+  0%
+    transform: translateX(-$scale) translateY(-$scale)
+  25%
+    transform: translateX($scale) translateY($scale)
+  35%
+    transform: translateX($scale*1.2) translateY(0)
+  45%
+    transform: translateX($scale) translateY(-$scale)
+  70%
+    transform: translateX(-$scale) translateY($scale)
+  75%
+    transform: translateX(-$scale*1.2) translateY(0)
+  100%
+    transform: translateX(-$scale) translateY(-$scale)
+
+
+.mission-number
+  font-size: 20px
+  font-weight: bold
+.input-profile-view
+  position: relative
+  input.mission-number
+    border: 0
+    width: 100px
+    background: transparent
+  input.nickname
+    width: 100px
+    height: 38px
+    background: transparent
+    border: 0
+    border-bottom: 1px solid #333
+
+.input-profile-view-background
+  +filter(2px)
+
+.input-profile-view-foreground
+  padding-top: 39%
+  padding-left: 15%
+  padding-right: 9%
+
+.agents-list, .instruction-section
+  width: 50%
+  margin: 0 auto
+  padding-top: 50px
+
+.agent
+  font-size: 20px
+  font-weight: bold
+
+.map
+  display: block
+  width: 100%
+  overflow: hidden
+  line-height: 0
+
+.map-background
+  width: 100%
+  height: 100%
+  position: absolute
+  +filter(10px)
+  z-index: -1
+  overflow: hidden
+
+.map-background-image
+  background-image: url('/static/img/antiquemap2.png')
+  background-repeat: no-repeat
+  overflow: hidden
+
+.map-cell
+  display: inline-block
+  width: 20%
+  position: relative
+  line-height: 16px
+  cursor: pointer
+
+.map-cell-background
+  width: 100%
+  position: absolute
+  z-index: -1
+  +opacity(0.5)
+
+.my-score
+  position: absolute
+  top: 3px
+  right: 3px
+  color: #44a
+  font-size: 16px
+  font-weight: bold
+
+.my-score-minus
+  color: red
+
+.other-score
+  position: absolute
+  bottom: 3px
+  right: 3px
+  color: #333
+  font-size: 16px
+  font-weight: bold
+
+.word-card
+  border: 1px solid black
+  overflow: hidden
+  text-align: center
+  font-size: 16px
+
+@media(max-width: 600px)
+  .my-score, .other-score, .word-card
+    font-size: 3vw
+
+$front-cell-size: 300px
+.front-cell-container
+  position: absolute
+  top: 0
+  left: 0
+  right: 0
+  width: 100%
+  height: 100%
+  cursor: pointer
+
+  .front-cell-frame-background
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    width: 100%
+    height: 100%
+    z-index: 1
+    background-color: rgba(1,1,1,0.8)
+
+  .front-cell-frame
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    width: 100%
+    height: 100%
+    z-index: 2
+    .front-cell-background
+      width: 80%
+      height: $front-cell-size
+      margin: 10% auto
+      position: absolute
+      top: 0
+      left: 0
+      right: 0
+      z-index: 1
+      +filter(5px)
+      overflow: hidden
+      background-size: 400%
+
+    .front-cell
+      border: 1px solid #444
+      width: 80%
+      height: $front-cell-size
+      margin: 10% auto
+      position: relative
+      z-index: 2
+      .front-word-background
+        position: absolute
+        top: 0
+        left: 0
+        right: 0
+        width: 100%
+        height: $front-cell-size
+        z-index: 1
+        +opacity(0.5)
+
+      .front-word
+        width: 100%
+        height: $front-cell-size
+        position: relative
+        z-index: 3
+        .front-word-card
+          line-height: $front-cell-size
+          font-size: 32px
+          text-align: center
+        .my-score, .other-score
+          font-size: 15px
+          max-width: 40%
+          text-align: right
+        .front-word-trans
+          position: absolute
+          left: 2px
+          bottom: 2px
+
+
