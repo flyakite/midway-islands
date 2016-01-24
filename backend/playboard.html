@@ -59,7 +59,7 @@
     </div>
 
     <div class="instruction-section">
-      <div ng-show="!island.state.allPlayerJoined">
+      <div ng-show="!state.allPlayerJoined">
         等待其他玩家....
       </div>
       <!-- temp -->
@@ -67,7 +67,7 @@
         <button class="btn btn-warning btn-lg" ng-click="startGame()">開始遊戲</button>
       </div>
       <!-- end of temp -->
-      <div ng-show="island.state.allRoleAssigned">
+      <div ng-show="state.allRoleAssigned">
         <div ng-show="currentUser.isHost">
           <button class="btn btn-warning btn-lg" ng-click="startGame()">開始遊戲</button>
         </div>
@@ -75,7 +75,7 @@
           等待 {{agents.$indexFor(0).nickname}} 開始遊戲
         </div>
       </div>
-      <div ng-show="localState.agentFull && island.state.playing">
+      <div ng-show="localState.agentFull && state.playing">
         這場已經滿了，請參加下一場。
       </div>
     </div>
@@ -121,7 +121,7 @@
           </span>
         </div>
         <div class="instruction-board padding-top padding-left">
-          {{island.state.currentStage.instruction}}
+          {{state.currentStage.instruction}}
         </div>
         <div class="telegraph-board">
           <div class="telegraph-box padding"
@@ -146,8 +146,8 @@
               顯示說明
             </div>
 
-            <div ng-show="(currentUser.role.isRed && island.state.currentStage.kind == 'c-red') || 
-              (currentUser.role.isBlue && island.state.currentStage.kind == 'c-blue')">
+            <div ng-show="(currentUser.role.isRed && state.currentStage.kind == 'c-red') || 
+              (currentUser.role.isBlue && state.currentStage.kind == 'c-blue')">
               <label for="telegraph-input">
                 提示詞：
                 <input type="text" id="telegraph-input" class="telegraph-input" ng-model="telegraph.message" ng-keyup="$event.keyCode == 13 && sendTelegraph()">
@@ -155,6 +155,17 @@
               <button class="btn btn-warning" ng-click="sendTelegraph()">
                 發送電報
                 剩餘 <span ng-class="{'count-down-ending':localState.countDown < 10}">{{localState.countDown}}</span> 秒
+              </button>
+            </div>
+
+            <div class="padding-top"
+              ng-show="currentUser.role.isBomber && 
+              ['g-red', 'g-blue'].indexOf(state.currentStage.kind) !== -1"
+              >
+              <button class="btn btn-warning"
+                ng-click="giveUpMissile()"
+                >
+                放棄剩下 {{localState.missileCount}} 枚飛彈，結束這回合
               </button>
             </div>
 

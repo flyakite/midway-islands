@@ -108,7 +108,7 @@ angular.module('controllers', [])
       round: ++j,
       interval: GUESS_TIME_INTERVAL,
       countDown: GUESS_TIME_INTERVAL/1000,
-      message: '第三方轟炸機請選擇轟炸目標',
+      message: '第三方轟炸機請根據紅方提示選擇轟炸目標',
       instruction: '轟炸機正在選擇目標...'
     });
     GAME_STAGES.push({
@@ -124,7 +124,7 @@ angular.module('controllers', [])
       round: ++j,
       interval: GUESS_TIME_INTERVAL,
       countDown: GUESS_TIME_INTERVAL/1000,
-      message: '第三方轟炸機請選擇轟炸目標',
+      message: '第三方轟炸機請根據藍方提示選擇轟炸目標',
       instruction: '轟炸機正在選擇目標...'
     });
   }
@@ -326,7 +326,7 @@ angular.module('controllers', [])
         showMessage(GAME_STAGES[$scope.state.stageIndex].message);
         if($scope.currentUser.role.isBomber && 
           ['g-red', 'g-blue'].indexOf(GAME_STAGES[$scope.state.stageIndex].kind) !== -1){
-          $scope.localState.missleCount = MISSILE_COUNT;
+          $scope.localState.missileCount = MISSILE_COUNT;
         }
       }
     });
@@ -344,6 +344,20 @@ angular.module('controllers', [])
 
   function endGame() {
     console.log('endGame');
+    updateScore();
+    // var maxScore=0, maxI=0, maxAgent;
+    // for(var i=$scope.roles.length;i--;){
+    //   if($scope.roles[i].score > maxScore){
+    //     maxScore = $scope.roles[i].score;
+    //     maxI = i;
+    //   }
+    // }
+    var msg = '';
+    for(var j=0;j<$scope.agents.length;j++){
+      msg += ' ' + $scope.agents[j].nickname + ' ' +
+      $scope.roles[$scope.agents[j].role.id].score + '分';
+    }
+    showMessage('遊戲結束了' +  msg);
   }
 
   var setStage = function() {
@@ -614,8 +628,8 @@ angular.module('controllers', [])
       message: message
     });
     showMessage(message);
-    $scope.localState.missleCount--;
-    if($scope.localState.missleCount == 0){
+    $scope.localState.missileCount--;
+    if($scope.localState.missileCount == 0){
       $scope.state.stageIndex++;
     }
     $scope.showFrontWord = false;
@@ -658,6 +672,11 @@ angular.module('controllers', [])
     });
 
     $scope.telegraph.message = '';
+  };
+
+  $scope.giveUpMissile = function() {
+    $scope.state.stageIndex++;
+    return false;
   };
 
 }])
