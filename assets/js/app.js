@@ -57,6 +57,31 @@ angular.module('backend', [
     }
   };
 })
+.filter('wordCaption', function() {
+  return function(word) {
+    if(word.isRuined){
+      if(word.isBlue){
+        return '藍方廢墟';
+      }else if(word.isRed){
+        return '紅方廢墟';
+      }else{
+        return '無辜居民廢墟';
+      }
+    }else if(word.isOccupied){
+      if(word.isBlue){
+        return '紅方和第三方共同佔領區';
+      }else if(word.isRed){
+        return '藍方和第三方共同佔領區';
+      }else{
+        return '';
+      }
+    }else if(word.isRed){
+      return '紅方區域';
+    }else if(word.isBlue){
+      return '藍方區域';
+    }
+  }
+})
 .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 
 

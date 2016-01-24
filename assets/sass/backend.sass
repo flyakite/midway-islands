@@ -2,6 +2,7 @@
 @import "bower_components/compass-mixins/lib/compass"
 @import "bower_components/compass-mixins/lib/animation/core"
 @import "bower_components/compass-mixins/lib/animation/animate"
+@import "bower_components/compass-mixins/lib/compass/css3/transition"
 // @import "bower_components/compass-sass-mixins/lib/animation"
 // @import "bower_components/compass-sass-mixins/lib/compass/css3/animation"
 @import "_mixins"
@@ -173,7 +174,7 @@ $scale: 50px
   padding-left: 15%
   padding-right: 9%
 
-.agents-list, .instruction-section
+.agents-list, .instruction-section, .roles-section
   width: 50%
   margin: 0 auto
   padding-top: 50px
@@ -207,12 +208,52 @@ $scale: 50px
   position: relative
   line-height: 16px
   cursor: pointer
+.missile-cursor
+  cursor: url(../img/missile.gif) 35 52, auto
+
+$red: #f20
+$blue: #22f
+$black: #222
+.strong-text
+  font-weight: 700
+  text-decoration: underline
+.red-text
+  color: $red
+.blue-text
+  color: $blue
+.red
+  background-color: $red
+.blue
+  background-color: $blue
+.occupied-by-red
+  background-color: none
+  background-image: repeating-linear-gradient($black,$black 25%,$red 0,$red 75%)
+.occupied-by-blue
+  background-color: none
+  background-image: repeating-linear-gradient($black,$black 25%,$blue 0,$blue 75%)
+.ruined
+  background-color: none
+  background-image: repeating-linear-gradient(45deg,$black,$black 5%,transparent 0, transparent 10%)
+.ruined-by-red
+  background-color: none
+  background-image: repeating-linear-gradient(45deg,$black,$black 5%,darken($red, 45%) 0,darken($red, 45%) 10%)
+.ruined-by-blue
+  background-color: none
+  background-image: repeating-linear-gradient(45deg,$black,$black 5%,darken($blue, 45%) 0,darken($blue, 45%) 10%)
 
 .map-cell-background
   width: 100%
   position: absolute
   z-index: -1
   +opacity(0.5)
+
+.word-kind
+  position: absolute
+  top: 3px
+  left: 3px
+  color: #333
+  font-size: 20px
+  font-weight: bold
 
 .my-score
   position: absolute
@@ -229,7 +270,7 @@ $scale: 50px
   position: absolute
   bottom: 3px
   right: 3px
-  color: #333
+  color: #666
   font-size: 16px
   font-weight: bold
 
@@ -242,6 +283,8 @@ $scale: 50px
 @media(max-width: 600px)
   .my-score, .other-score, .word-card
     font-size: 3vw
+  .word-kind
+    font-size: 4vw
 
 $front-cell-size: 300px
 .front-cell-container
@@ -318,5 +361,100 @@ $front-cell-size: 300px
           position: absolute
           left: 2px
           bottom: 2px
+  .front-ask-to-bomb
+    width: 100%
+    background-color: #222
+    color: #fff
+    padding: 10px
+    text-align: center
+    text-size: 18px
 
+$mheight: 107px //telegraph
+$sheight: 200px //satus
+$scheight: 39px
+.dashboard
+  background-image: url('/static/img/telegraph.png')
+  position: relative
+  width: 100%
+  background-position-y: 30%
+  z-index: 0
+.boards-background
+  position: absolute
+  width: 100%
+  min-height: $mheight + $sheight + $scheight*2
+  opacity: 0.7
+  background-color: black
+  z-index: 0
+.boards
+  position: relative
+  z-index: 1
+.score-board, .instruction-board
+  color: #fff
+  font-size: 14px
+  min-height: $scheight
+  .score-info
+    margin-right: 10px
+.telegraph-board
+  min-height: $mheight
+  .telegraph-box
+    input.telegraph-input
+      max-width: 80%
+      width: 100px
+      height: 33px
+      +border-radius(5px)
+      color: #222
+    .count-down-ending
+      color: #f00
+    label, .role-instruction, .show-instruction
+      font-weight: 500
+      font-size: 14px
+      color: white
+      text-shadow: 2px 2px black
+  .telegraph-guess
+    font-weight: 500
+    font-size: 14px
+    color: white
+    text-shadow: 2px 2px black
+
+
+.status-board-frame, .status-board
+  min-height: $sheight
+  width: 100%
+  position: relative
+  color: #f8f8f8
+
+.log-board
+  overflow-y: scroll
+  font-size: 14px
+
+.popup-message
+  background-color: #222
+  color: #fff
+  font-size: 18px
+  position: absolute
+  top: 200px
+  left: 0
+  right: 0
+  line-height: 150px
+  height: 150px
+  width: 100%
+  opacity: 0.85
+  text-align: center
+  overflow: hidden
+  z-index: 10
+  opacity: 0
+  visibility: hidden
+  +my-transition(visibility 0s 2s, opacity 2s ease-in-out)
+
+.popup-message.active
+  opacity: 0.9
+  visibility: visible
+
+
+// .status-board-background
+//   position: absolute
+//   width: 100%
+//   height: $sheight
+//   opacity: 0.7
+//   background-color: black
 

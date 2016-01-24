@@ -1,8 +1,13 @@
 <div class="container-fluid main-container" >
+  <div class="popup-message"
+    ng-class="{'active':showPopupMessage}"
+    ng-click="hideMessage()">
+    {{popupMessage}}
+  </div>
   <div class="main-container-background"></div>
 
   <!-- input-profile-view -->
-  <div class="input-profile-view" ng-show="false && localState.inputProfile">
+  <div class="input-profile-view" ng-show="localState.inputProfile && !localState.gameStarted">
     <div class="input-profile-view-background background-blur"
       style="background-image:url('/static/img/old-paper2.png');min-height:1000px;">
     </div>
@@ -12,13 +17,17 @@
       </label>
       <div class="spacer"></div>
       <div>
-        <span class="bold">任務目標：</span>
-        你被派往中途島的一個小島，蒐集完島上的情報，你要將你發現戰略價值較高的各地區塊的代號(英文單字)發無線電給其他探員，但是你不可以直接講代號，否則會被敵軍攔截破譯，發揮你的想像力，想像這些英文代號的關連詞，發送關連詞給其他探員讓他們可以猜到你的英文代號，發送的關連詞必須為一個簡短有意義的普通單詞。
+        <span class="bold">任務大綱：</span>
+        在一個島嶼上，敵對的<span class="red-text">紅方</span>與<span class="blue-text">藍方</span>亟欲消滅對方的軍事基地，<span class="strong-text">第三方</span>的傭兵勢力狹著絕對的制空優勢，兩面討好伺機崛起...
+        <br>
+        第三方不知道紅藍兩方的軍事基地位置，而為了避免訊息遭到攔截解密，紅藍兩方將會傳送<span class="strong-text">敵對區域代號的相關詞</span>給第三方，第三方會依據這個相關詞去聯想區域代號，轟炸該區域，並且提出聯合佔領的主意...
+        <br>
+        三回合後由佔領最多區域的勢力獲勝。
       </div>
       <div class="spacer"></div>
       <div>
         <label for="nickname">
-          <span class="bold">探員匿稱：</span>
+          <span class="bold">你的匿稱：</span>
           <input type="text" id="nickname" class="nickname" ng-model="currentUser.nickname">
         </label>
       </div>
@@ -30,19 +39,41 @@
   </div>
 
   <!-- agent-ready-list-view -->
-  <div class="agent-ready-list-view" ng-show="localState.agentReady">
+  <div class="agent-ready-list-view" ng-show="localState.agentReady && !localState.gameStarted">
     <div class="agents-list">
       <span class="mission-number">任務編號：{{island.number}}</span>
-      <div class="agent" ng-repeat="agent in island.agents">
-        {{agent.nickname}} 準備就緒
+      <div class="agent" ng-repeat="agent in agents">
+        <span>{{agent.nickname}}</span>
+        <span>{{agent.role.name}}</span>
       </div>
     </div>
+
+    <div class="roles-section">
+      <div>
+        選擇你的角色
+      </div>
+      <button class="btn btn-default role" ng-repeat="role in roles" 
+        ng-click="pickRole(role)">
+        {{role.name}}
+      </button>
+    </div>
+
     <div class="instruction-section">
-      <div ng-show="!island.state.isReady">
+      <div ng-show="!island.state.allPlayerJoined">
         等待其他玩家....
       </div>
-      <div ng-show="island.state.isReady">
+      <!-- temp -->
+      <div ng-show="currentUser.isHost">
         <button class="btn btn-warning btn-lg" ng-click="startGame()">開始遊戲</button>
+      </div>
+      <!-- end of temp -->
+      <div ng-show="island.state.allRoleAssigned">
+        <div ng-show="currentUser.isHost">
+          <button class="btn btn-warning btn-lg" ng-click="startGame()">開始遊戲</button>
+        </div>
+        <div ng-show="!currentUser.isHost">
+          等待 {{agents.$indexFor(0).nickname}} 開始遊戲
+        </div>
       </div>
       <div ng-show="localState.agentFull && island.state.playing">
         這場已經滿了，請參加下一場。
@@ -51,20 +82,96 @@
   </div>
 
   <div class="game">
+    <!-- map -->
     <div class="map">
       <div class="map-background map-background-image" style="height:{{mapHeight}}px;"></div>
       <div class="map-cell" ng-repeat="word in words" style="height:{{cellHeight}}px;" 
+        ng-class="{'missile-cursor':currentUser.role.isBomber && 
+        ['g-red', 'g-blue'].indexOf(state.currentStage.kind) !== -1}"
         ng-click="onMapCellClicked($index, word)">
-        <div class="map-cell-background" 
-          style="height:{{cellHeight}}px;background-color:{{mapCellBackgroundColor(word)}}"></div>
-        <div class="my-score" ng-show="word.myScore">
+        <div class="map-cell-background"
+          ng-class="{
+            'red':word.isRed && (currentUser.role.isRed || currentUser.role.isBlue),
+            'blue':word.isBlue && (currentUser.role.isRed || currentUser.role.isBlue),
+            'occupied-by-red':word.isBlue && word.isOccupied,
+            'occupied-by-blue':word.isRed && word.isOccupied,
+            'ruined':word.isRuined,
+            'ruined-by-red':word.isRed && word.isRuined,
+            'ruined-by-blue':word.isBlue && word.isRuined,
+          }"
+          style="height:{{cellHeight}}px"></div>
+        <!-- <div class="my-score" ng-show="word.myScore && localState.state.currentStage.kind == 'crypto'">
           {{word.myScore}}
         </div>
-        <div class="other-score" ng-show="word.oScore">
+        <div class="other-score" ng-show="word.oScore && localState.state.currentStage.kind == 'crypto'">
           {{word.oScore}}
-        </div>
+        </div> -->
         <div class="word-card" style="height:{{cellHeight}}px;line-height:{{cellHeight}}px;">
           {{word.name}}
+        </div>
+      </div>
+    </div>
+    <div class="dashboard">
+      <div class="boards-background"></div>
+      <div class="boards">
+        <div class="score-board padding-top padding-left">
+          <span class="score-info" ng-repeat="role in roles">
+            {{role.name}}勢力
+            {{role.score}}
+          </span>
+        </div>
+        <div class="instruction-board padding-top padding-left">
+          {{island.state.currentStage.instruction}}
+        </div>
+        <div class="telegraph-board">
+          <div class="telegraph-box padding"
+            ng-init="localState.showRoleInstruction = false">
+
+            <div class="role-instruction" 
+              ng-show="localState.showRoleInstruction"
+              ng-click="localState.showRoleInstruction = false">
+              <div ng-show="currentUser.role.isRed">
+                  你是紅方，你的目標是殲滅上面地圖中的藍方領土，你可以傳送一個簡短有意義的英文單字給轟炸機，讓他看到後會聯想到上面藍色區域的代碼，比如你看到藍方有 sky 和 sea 的時候你可以傳 blue，轟炸機最多有四次轟炸機會。
+              </div>
+              <div ng-show="currentUser.role.isBlue">
+                  你是藍方，你的目標是殲滅上面地圖中的紅方領土，你可以傳送一個簡短有意義的英文單字給轟炸機，讓他看到後會聯想到上面紅色區域的代碼，比如你看到紅方有 blood 和 tomato 的時候你可以傳 red，轟炸機最多有四次轟炸機會。
+              </div>
+              <div ng-show="currentUser.role.isBomber">
+                  你是武力強大的第三勢力，你會收到紅方或藍方進攻對方提示，你根據這個提示猜測他們想要轟炸對方的區域給予轟炸，每個提示最多有四次轟炸機會。假設你依據紅方指示正確幫紅方打中藍方佔領區，則你和紅方可以協同佔領該區，打到平民區則會結束該回合，配合紅方打到紅方自己人則該區損毀並結束回合。
+              </div>
+            </div>
+
+            <div class="show-instruction" ng-show="!localState.showRoleInstruction"
+              ng-click="localState.showRoleInstruction = true">
+              顯示說明
+            </div>
+
+            <div ng-show="(currentUser.role.isRed && island.state.currentStage.kind == 'c-red') || 
+              (currentUser.role.isBlue && island.state.currentStage.kind == 'c-blue')">
+              <label for="telegraph-input">
+                提示詞：
+                <input type="text" id="telegraph-input" class="telegraph-input" ng-model="telegraph.message" ng-keyup="$event.keyCode == 13 && sendTelegraph()">
+              </label>
+              <button class="btn btn-warning" ng-click="sendTelegraph()">
+                發送電報
+                剩餘 <span ng-class="{'count-down-ending':localState.countDown < 10}">{{localState.countDown}}</span> 秒
+              </button>
+            </div>
+
+          </div>
+        </div>
+        
+        <div class="status-board-frame">
+          <!-- <div class="status-board-background"></div> -->
+          <div class="status-board">
+            <div class="log-board padding">
+              <div class="logs">
+                <div class="log" ng-repeat="log in logs">
+                  {{log.message}}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -80,14 +187,27 @@
       </div>
       <div class="front-cell">
         <div class="front-word-background" 
-          style="background-color:{{mapCellBackgroundColor(frontWord)}}"></div>
+          ng-class="{
+            'red':frontWord.isRed && (currentUser.role.isRed || currentUser.role.isBlue),
+            'blue':frontWord.isBlue && (currentUser.role.isRed || currentUser.role.isBlue),
+            'occupied-by-red':frontWord.isBlue && frontWord.isOccupied,
+            'occupied-by-blue':frontWord.isRed && frontWord.isOccupied,
+            'ruined':frontWord.isRuined,
+            'ruined-by-red':frontWord.isRed && frontWord.isRuined,
+            'ruined-by-blue':frontWord.isBlue && frontWord.isRuined,
+          }"></div>
         <div class="front-word">
-          <div class="my-score" ng-show="frontWord.myScore">
-            當有其他探員猜出這個區域代號時，我可以得到 {{frontWord.myScore}} 分
+          <div class="word-kind" 
+            ng-show="(currentUser.role.isRed || currentUser.role.isBlue) || 
+              currentUser.role.isBomber && (frontWord.isOccupied || frontWord.isRuined)">
+            {{frontWord | wordCaption}}
           </div>
-          <div class="other-score" ng-show="frontWord.oScore">
-            當有其他探員猜出這個區域代號時，她可以得到 {{frontWord.oScore}} 分
+          <!--div class="my-score" ng-show="frontWord.myScore && localState.state.currentStage.kind == 'crypto'">
+            當其他人根據你發送的詞聯想到這個區域代號時，你可以得到 {{frontWord.myScore}} 分
           </div>
+          <div class="other-score" ng-show="frontWord.oScore && localState.state.currentStage.kind == 'crypto'">
+            當其他人根據你發送的詞聯想到這個區域代號時，她可以得到 {{frontWord.oScore}} 分
+          </div-->
           <div class="front-word-card">
             {{frontWord.name}}
           </div>
@@ -95,8 +215,15 @@
             {{frontWord.trans}}
           </div>
         </div>
+        <div class="front-ask-to-bomb" ng-show="currentUser.role.isBomber && 
+          !(frontWord.isOccupied || frontWord.isRuined) && 
+          ['g-red', 'g-blue'].indexOf(state.currentStage.kind) !== -1">
+          轟炸此區？ 
+          <button class="btn" ng-click="fireInTheHole(frontWord)">確定</button>
+          <button class="btn">取消</button>
+        </div>
       </div>
-    </div>
+    </div>  
   </div>
     
   

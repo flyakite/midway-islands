@@ -34,3 +34,11 @@
   -ms-filter: blur($value);
   filter: blur($value);
 }
+
+@mixin my-transition($value, $value2) {
+  -webkit-transition: $value, $value2;
+  -moz-transition: $value, $value2;
+  -o-transition: $value, $value2;
+  -ms-transition: $value, $value2;
+  transition: $value, $value2;
+}
