@@ -16,6 +16,7 @@ angular.module('controllers', [])
   var islandsRef = new Firebase(APP_CONFIG.FIREBASE.URL + '/islands');
   var islands = $firebaseArray(islandsRef);
   $scope.islandCapacity = 3;
+  $scope.words = APP_CONFIG.DEFAULT_WORDS;//.replace(/\r?\n/g, '<br />');
 
   $scope.createisland = function() {
     console.dir('create');
@@ -42,33 +43,7 @@ angular.module('controllers', [])
       var wordsRef = new Firebase(APP_CONFIG.FIREBASE.URL + '/islands/' + islandKey + '/words');
       var words = $firebaseArray(wordsRef);
 
-      var initWords = [ 
-        {id:0, name: 'food1', trans: '食物', isRed:true},
-        {id:1, name: 'food2', trans: '食物', isBlue:true},
-        {id:2, name: 'food3', trans: '食物', isRed:true, isOccupied:true},
-        {id:3, name: 'food4', trans: '食物', isBlue:true, isOccupied:true},
-        {id:4, name: 'food5', trans: '食物', isRuined:true},
-        {id:5, name: 'dog1', trans: '狗', isRed:true, isRuined:true},
-        {id:6, name: 'dog2', trans: '狗', isBlue:true, isRuined:true},
-        {id:7, name: 'dog3', trans: '狗'},
-        {id:8, name: 'dog4', trans: '狗'},
-        {id:9, name: 'dog5', trans: '狗'},
-        {id:10, name: 'dog6', trans: '狗'},
-        {id:11, name: 'mississippi', trans: '狗'},
-        {id:12, name: 'dog8', trans: '狗'},
-        {id:13, name: 'dog9', trans: '狗'},
-        {id:14, name: 'dog0', trans: '狗'},
-        {id:15, name: 'cat1', trans: '貓'},
-        {id:16, name: 'cat2', trans: '貓'},
-        {id:17, name: 'cat3', trans: '貓'},
-        {id:18, name: 'cat4', trans: '貓'},
-        {id:19, name: 'cat5', trans: '貓'},
-        {id:20, name: 'cat6', trans: '貓'},
-        {id:21, name: 'cat7', trans: '貓'},
-        {id:22, name: 'cat8', trans: '貓'},
-        {id:23, name: 'cat9', trans: '貓'},
-        {id:24, name: 'cat0', trans: '貓'},
-      ];
+      var initWords = [];
 
       for(var i=0;i<initWords.length;i++){
         words.$add(initWords[i]);
