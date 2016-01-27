@@ -670,31 +670,35 @@ angular.module('controllers', [])
       word.isRuined = true;
       $scope.words.$save(word);
       $scope.roles[RED].score--;
-      $scope.roles.$save();
+      $scope.roles.$save($scope.roles[RED]);
       $scope.state.stageIndex++;
       message += ' （這是紅方的領地呀！ 這回合結束了）';
     }else if(word.isBlue && $scope.state.currentStage.kind == 'g-blue'){
       word.isRuined = true;
       $scope.words.$save(word);
       $scope.roles[BLUE].score--;
-      $scope.roles.$save();
+      $scope.roles.$save($scope.roles[BLUE]);
       $scope.state.stageIndex++;
       message += ' （這是藍方的領地呀！ 這回合結束了）';
     }else if(word.isRed && $scope.state.currentStage.kind == 'g-blue'){
       word.isOccupied = true;
       $scope.words.$save(word);
       $scope.roles[RED].score--;
+      $scope.roles.$save($scope.roles[RED]);
       $scope.roles[BLUE].score += 0.5;
+      $scope.roles.$save($scope.roles[BLUE]);
       $scope.roles[BOMBER].score += 0.5;
-      $scope.roles.$save();
+      $scope.roles.$save($scope.roles[BOMBER]);
       message += ' （成功佔領這塊紅方區域！）';
     }else if(word.isBlue && $scope.state.currentStage.kind == 'g-red'){
       word.isOccupied = true;
       $scope.words.$save(word);
       $scope.roles[BLUE].score--;
+      $scope.roles.$save($scope.roles[BLUE]);
       $scope.roles[RED].score += 0.5;
+      $scope.roles.$save($scope.roles[RED]);
       $scope.roles[BOMBER].score += 0.5;
-      $scope.roles.$save();
+      $scope.roles.$save($scope.roles[BOMBER]);
       message += ' （成功佔領這塊藍方區域！）';
     }else{
       word.isRuined = true;
