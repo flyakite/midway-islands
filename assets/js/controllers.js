@@ -665,8 +665,7 @@ angular.module('controllers', [])
       console.error('Not a guessing stage ', $scope.state.currentStage.kind);
       return
     }
-    var sMessage = $scope.currentUser.nickname + ' 選擇轟炸 ' + word.name;
-    var message = sMessage;
+    var message = $scope.currentUser.nickname + ' 選擇轟炸 ' + word.name;
     if(word.isRed && $scope.state.currentStage.kind == 'g-red'){
       word.isRuined = true;
       $scope.words.$save(word);
@@ -699,11 +698,12 @@ angular.module('controllers', [])
       message += ' （成功佔領這塊藍方區域！）';
     }else{
       word.isRuined = true;
+      $scope.words.$save(word);
       $scope.state.stageIndex++;
       message += ' （這是一個平民區！ 這回合結束了）';
     }
     $scope.logs.$add({
-      message: sMessage,
+      message: message,
       isImportant: true
     });
     $scope.logs.$save(); //trigger $watch
