@@ -5,9 +5,6 @@ angular.module('app.config', [])
       'FIREBASE':{
         'URL': 'https://midway-islands.firebaseio.com'
       },
-      'TEMPLATE': {
-        'LOADING': '<div class="list card padding no-margin rounded"><i class="icon fa fa-spinner fa-pulse fa-3x mai-dark-orange"></i><div>'
-      },
       'DEFAULT_WORDS':"\
 blizzard/大風雪\n\
 autopilot/自動駕駛\n\
@@ -17,7 +14,6 @@ foam/泡沫\n\
 outlier/局外人\n\
 pitfall/陰謀, 陷阱\n\
 ritual/儀式\n\
-vaccination/疫苗接種\n\
 blinker/信號燈\n\
 levers/槓桿、手段\n\
 plagues/瘟疫\n\

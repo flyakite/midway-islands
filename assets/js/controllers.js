@@ -10,16 +10,75 @@ angular.module('controllers', [])
 
 
 .controller('CreateislandController', 
-  ['$scope', '$state', 'APP_CONFIG', '$firebaseObject', '$firebaseArray', 
-  function($scope, $state, APP_CONFIG, $firebaseObject, $firebaseArray) {
+  ['$scope', '$state', 'APP_CONFIG', '$firebaseObject', '$firebaseArray', 'AppService', 
+  function($scope, $state, APP_CONFIG, $firebaseObject, $firebaseArray, AppService) {
 
   var islandsRef = new Firebase(APP_CONFIG.FIREBASE.URL + '/islands');
   var islands = $firebaseArray(islandsRef);
   $scope.islandCapacity = 3;
   $scope.words = APP_CONFIG.DEFAULT_WORDS;//.replace(/\r?\n/g, '<br />');
 
+  function wordsStringToObjectArray(ws){
+    var oa = [];
+    var _w;
+    ws = ws.split(/\r?\n/);
+    for(var i=0; i<ws.length;i++){
+      if(ws[i].length > 0){
+        _w = ws[i].split('/');
+        if(_w.length >= 2){
+          oa.push({
+            id: i,
+            name: _w[0],
+            trans: _w[1],
+          })
+        }
+      }
+    }
+    return oa;
+  }
+
+  //assign isRed or isBlue property to words, and select sampleLength samples from them.
+  function assignWordsIntoRedAndBlue(words, redCount, blueCount, sampleLength){
+    if(words.length < redCount + blueCount || words.length < sampleLength){
+      console.error('error');
+    }
+    var i=words.length, t, word;
+    while(i--){
+      t = Math.floor((i+1)*Math.random());
+      word = words[t];
+      if(redCount>0){
+        word.isRed = true;
+        words[t] = words[i];
+        words[i] = word;
+        redCount--;
+      }else if(blueCount >0){
+        word.isBlue = true;
+        words[t] = words[i];
+        words[i] = word;
+        blueCount--;
+      }else if(words.length>sampleLength){
+        words.splice(t,1);
+      }else{
+        break;
+      }
+    }
+    return words;
+  }
+
+  function shuffleWords(ws) {
+    var i=ws.length, t, w;
+    while(i--){
+      t = Math.floor((i+1)*Math.random());
+      w = ws[t];
+      ws[t] = ws[i];
+      ws[i] = w;
+    }
+    return ws;
+  }
+
   $scope.createisland = function() {
     console.dir('create');
+    AppService.showLoading();
     var islandNumber = Math.floor(100000 + Math.random()*89999);
     console.dir(islandNumber);
     var island = {
@@ -43,26 +102,33 @@ angular.module('controllers', [])
       var wordsRef = new Firebase(APP_CONFIG.FIREBASE.URL + '/islands/' + islandKey + '/words');
       var words = $firebaseArray(wordsRef);
 
-      var initWords = [];
+      var oa = wordsStringToObjectArray($scope.words)
+      console.log(oa);
+      var aw = assignWordsIntoRedAndBlue(oa, 9, 9, 25);
+      console.log(aw);
+      var shuffledWords = shuffleWords(aw);
+      console.log(shuffledWords);
 
-      for(var i=0;i<initWords.length;i++){
-        words.$add(initWords[i]);
+      for(var i=0;i<shuffledWords.length;i++){
+        words.$add(shuffledWords[i]);
       }
 
       $state.go('island.playboard', {islandKey:islandKey});
+      AppService.hideLoading();
     });
   };
 
 }])
 .controller('PlayboardController', 
-  ['$scope', '$state', 'APP_CONFIG', '$firebaseObject', '$firebaseArray', '$cookies', '$uibModal',
-  function($scope, $state, APP_CONFIG, $firebaseObject, $firebaseArray, $cookies, $uibModal) {
+  ['$scope', '$state', 'APP_CONFIG', '$firebaseObject', '$firebaseArray', '$cookies', '$uibModal', 'AppService',
+  function($scope, $state, APP_CONFIG, $firebaseObject, $firebaseArray, $cookies, $uibModal, AppService) {
 
-
+  
+  AppService.showLoading();
   var CURRENTUSER_COOKIE_KEY = 'cu';
-  var CRYPTO_TIME_INTERVAL = 6*1000;
+  var CRYPTO_TIME_INTERVAL = 60*1000;
   var INIT_CRYPTO_TIME_INTERVAL = 3*CRYPTO_TIME_INTERVAL;
-  var GUESS_TIME_INTERVAL = 10*1000;
+  var GUESS_TIME_INTERVAL = 60*1000;
   var RED = 0;
   var BLUE = 1;
   var BOMBER = 2;
@@ -83,8 +149,8 @@ angular.module('controllers', [])
       round: ++j,
       interval: GUESS_TIME_INTERVAL,
       countDown: GUESS_TIME_INTERVAL/1000,
-      message: '第三方轟炸機請根據紅方提示選擇轟炸目標',
-      instruction: '轟炸機正在選擇目標...'
+      message: '',
+      instruction: '第三方正在選擇轟炸目標...'
     });
     GAME_STAGES.push({
       kind:'c-blue',
@@ -99,8 +165,8 @@ angular.module('controllers', [])
       round: ++j,
       interval: GUESS_TIME_INTERVAL,
       countDown: GUESS_TIME_INTERVAL/1000,
-      message: '第三方轟炸機請根據藍方提示選擇轟炸目標',
-      instruction: '轟炸機正在選擇目標...'
+      message: '',
+      instruction: '第三方正在選擇轟炸目標...'
     });
   }
   //initial stage interval longer
@@ -193,8 +259,10 @@ angular.module('controllers', [])
   //init state
   $scope.localState = {
     inputProfile: true,
-    agentReady: true,
-    stageIndex: 0
+    agentReady: false,
+    gameStarted: false,
+    stageIndex: 0,
+    logIndex: 0
   };
 
   function islandInit () {
@@ -298,7 +366,10 @@ angular.module('controllers', [])
           return
         }
         $scope.localState.stageIndex = $scope.state.stageIndex;
-        showMessage(GAME_STAGES[$scope.state.stageIndex].message);
+        var msg = GAME_STAGES[$scope.state.stageIndex].message;
+        if(msg && msg.length > 0){
+          showMessage(msg);
+        }
         if($scope.currentUser.role.isBomber && 
           ['g-red', 'g-blue'].indexOf(GAME_STAGES[$scope.state.stageIndex].kind) !== -1){
           $scope.localState.missileCount = MISSILE_COUNT;
@@ -306,6 +377,7 @@ angular.module('controllers', [])
       }
     });
     localStartGame();
+    AppService.hideLoading();
   });
 
   function localStartGame () {
@@ -420,7 +492,7 @@ angular.module('controllers', [])
           // console.dir($scope.agents.$indexFor(0));
           $scope.localState.myAgentKey = ref.key();
           // if(Object.size(agents) >= 1){
-          if($scope.agents.length == 1){ //$scope.island.capacity){
+          if($scope.agents.length == $scope.island.capacity){
             //island is full
             $scope.localState.agentFull = true;
             if(!$scope.state){
@@ -440,13 +512,15 @@ angular.module('controllers', [])
 
   var showMessageTimeout;
   function showMessage(text) {
-    console.log('show ', text);
+    console.log('showMessage ', text);
     clearTimeout(showMessageTimeout);
     $scope.popupMessage = text;
     $scope.showPopupMessage = true;
     showMessageTimeout = setTimeout(function() {
+      console.log('hideMessage');
       $scope.showPopupMessage = false;
-    }, 5000)
+      $scope.$apply();
+    }, 3000)
   }
 
   $scope.hideMessage = function() {
@@ -454,12 +528,35 @@ angular.module('controllers', [])
     $scope.showPopupMessage = false;
   }
 
+  function checkAllRoleAssigned(){
+    console.log('checkAllRoleAssigned');
+    if($scope.agents.length != $scope.island.capacity){
+      console.log('not full');
+      return false;
+    }
+    for(var i = $scope.agents.length;i--;){
+      if(!$scope.agents[i].role){
+        console.log('no role');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  var siara = setInterval(function() {
+    if($scope.currentUser.isHost && checkAllRoleAssigned()){
+      $scope.state.allRoleAssigned = true;
+      clearInterval(siara);
+    }
+  }, 3000);
+
+
   $scope.pickRole = function(role) {
     console.dir('pickRole');
     console.dir(role);
     console.dir($scope.agents);
     for(var i = $scope.agents.length;i--;){
-      console.dir($scope.agents[i]);
+      // console.dir($scope.agents[i]);
       if($scope.agents[i].role && $scope.agents[i].role.id == role.id){
         showMessage(role.name + '已經被選走，請選擇其他角色');
         return
@@ -480,6 +577,11 @@ angular.module('controllers', [])
       $scope.agents.$save(me);
     }
     $scope.currentUser.role = role;
+    if(checkAllRoleAssigned()){
+      console.log('allRoleAssigned');
+      $scope.state.allRoleAssigned = true;
+    }
+    
   };
 
   $scope.startGame = function() {
@@ -563,7 +665,8 @@ angular.module('controllers', [])
       console.error('Not a guessing stage ', $scope.state.currentStage.kind);
       return
     }
-    var message = $scope.currentUser.nickname + ' 選擇轟炸 ' + word.name;
+    var sMessage = $scope.currentUser.nickname + ' 選擇轟炸 ' + word.name;
+    var message = sMessage;
     if(word.isRed && $scope.state.currentStage.kind == 'g-red'){
       word.isRuined = true;
       $scope.words.$save(word);
@@ -600,8 +703,10 @@ angular.module('controllers', [])
       message += ' （這是一個平民區！ 這回合結束了）';
     }
     $scope.logs.$add({
-      message: message
+      message: sMessage,
+      isImportant: true
     });
+    $scope.logs.$save(); //trigger $watch
     showMessage(message);
     $scope.localState.missileCount--;
     if($scope.localState.missileCount == 0){
@@ -643,11 +748,26 @@ angular.module('controllers', [])
     }
 
     $scope.logs.$add({
-      message:$scope.currentUser.nickname + ' 發送了作戰提示： ' + $scope.telegraph.message
+      message:$scope.currentUser.nickname + ' 發送了作戰提示： ' + $scope.telegraph.message,
+      isImportant: true
     });
+    $scope.logs.$save(); //trigger $watch
 
     $scope.telegraph.message = '';
   };
+
+
+  $scope.logs.$watch(function() {
+    console.log('logs changed');
+    if($scope.logs.length - 1 > $scope.localState.logIndex){
+      //new log
+      $scope.localState.logIndex = $scope.logs.length - 1;
+      var log = $scope.logs[$scope.localState.logIndex]
+      if(log.isImportant){
+        showMessage(log.message);
+      }
+    }
+  });
 
   $scope.giveUpMissile = function() {
     $scope.state.stageIndex++;
@@ -678,3 +798,5 @@ angular.module('controllers', [])
 // }])
 // 
 ;
+console.log = function() {};
+console.dir = function() {};

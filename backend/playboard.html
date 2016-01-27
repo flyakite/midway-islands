@@ -12,22 +12,22 @@
       style="background-image:url('/static/img/old-paper2.png');min-height:1000px;">
     </div>
     <div class="input-profile-view-foreground padding-2">
-      <label>
+      <!-- <label>
         <span class="bold">任務編號：{{island.number}}</span>
-      </label>
+      </label> -->
       <div class="spacer"></div>
       <div>
-        <span class="bold">任務大綱：</span>
-        在一個島嶼上，敵對的<span class="red-text">紅方</span>與<span class="blue-text">藍方</span>亟欲消滅對方的軍事基地，<span class="strong-text">第三方</span>的傭兵勢力狹著絕對的制空優勢，兩面討好伺機崛起...
+        <span class="bold">故事背景：</span>
+        在一個島嶼上，敵對的<span class="red-text">紅方</span>與<span class="blue-text">藍方</span>亟欲消滅對方的軍事基地，遠道而來的<span class="strong-text">第三方</span>傭兵勢力狹著絕對的制空優勢，兩面討好伺機崛起...
         <br>
-        第三方不知道紅藍兩方的軍事基地位置，而為了避免訊息遭到攔截解密，紅藍兩方將會傳送<span class="strong-text">敵對區域代號的相關詞</span>給第三方，第三方會依據這個相關詞去聯想區域代號，轟炸該區域，並且提出聯合佔領的主意...
+        第三方不知道紅藍兩方的確切據點位置，而為了避免訊息遭到攔截解密，紅藍兩方將會傳送<span class="strong-text">敵對區域代號的相關詞</span>當做提示給第三方，第三方會依據這個相關詞去聯想區域代號，轟炸該區域，並且提出聯合佔領的主意...
         <br>
         三回合後由佔領最多區域的勢力獲勝。
       </div>
       <div class="spacer"></div>
       <div>
         <label for="nickname">
-          <span class="bold">你的匿稱：</span>
+          <span class="bold">指揮官匿稱：</span>
           <input type="text" id="nickname" class="nickname" ng-model="currentUser.nickname">
         </label>
       </div>
@@ -40,39 +40,65 @@
 
   <!-- agent-ready-list-view -->
   <div class="agent-ready-list-view" ng-show="localState.agentReady && !localState.gameStarted">
+    <div class="roles-section">
+      <h4>選擇你的角色：</h4>
+      <div ng-init="showRedI=false;showBlueI=false;showBomberI=false">
+          紅方，初始目標是
+          <span class="cursor-pointer" ng-show="!showRedI" ng-click="showRedI = true">
+            ...(顯示詳細內容)
+          </span>
+          <span class="cursor-pointer" ng-show="showRedI" ng-click="showRedI = false">
+            殲滅上面地圖中的藍方領土，你可以傳送一個簡短有意義的英文單字給第三方轟炸機，讓他看到後會聯想到上面藍色區域的代碼，比如你看到藍方有 sky 和 sea 的時候你可以傳 blue，轟炸機最多有四次轟炸機會。  
+          </span>
+      </div>
+      <div class="spacer-2"></div>
+      <div>
+          藍方，初始目標是
+          <span class="cursor-pointer" ng-show="!showBlueI" ng-click="showBlueI = true">
+            ...(顯示詳細內容)
+          </span>
+          <span class="cursor-pointer" ng-show="showBlueI" ng-click="showBlueI = false">
+            殲滅上面地圖中的紅方領土，你可以傳送一個簡短有意義的英文單字給第三方轟炸機，讓他看到後會聯想到上面紅色區域的代碼，比如你看到紅方有 blood 和 tomato 的時候你可以傳 red，轟炸機最多有四次轟炸機會。
+          </span>
+      </div>
+      <div class="spacer-2"></div>
+      <div>
+          第三方勢力，
+          <span class="cursor-pointer" ng-show="!showBomberI" ng-click="showBomberI = true">
+            ...(顯示詳細內容)
+          </span>
+          <span class="cursor-pointer" ng-show="showBomberI" ng-click="showBomberI = false">
+            你會收到紅方或藍方進攻對方的提示，你根據這個提示猜測他們想要轟炸對方的區域給予轟炸，每個提示最多有四次轟炸機會。假設你依據紅方指示正確幫紅方打中藍方據點，則你和紅方可以共同佔領該區；打到平民區則結束該回合；配合紅方打到紅方自己人則該區損毀並結束該回合。
+          </span>
+      </div>
+      <div class="spacer-2"></div>
+      <button class="btn btn-default role" ng-repeat="role in roles" 
+        ng-click="pickRole(role)">
+        {{role.name}}
+      </button>
+
+      <div>（你可以分享這個網頁的連結，邀請你的朋友加入）</div>
+    </div>
     <div class="agents-list">
-      <span class="mission-number">任務編號：{{island.number}}</span>
+      <!-- <span class="mission-number">任務編號：{{island.number}}</span> -->
+      <h4>玩家名單</h4>
       <div class="agent" ng-repeat="agent in agents">
         <span>{{agent.nickname}}</span>
         <span>{{agent.role.name}}</span>
       </div>
     </div>
 
-    <div class="roles-section">
-      <div>
-        選擇你的角色
-      </div>
-      <button class="btn btn-default role" ng-repeat="role in roles" 
-        ng-click="pickRole(role)">
-        {{role.name}}
-      </button>
-    </div>
 
     <div class="instruction-section">
       <div ng-show="!state.allPlayerJoined">
         等待其他玩家....
       </div>
-      <!-- temp -->
-      <div ng-show="currentUser.isHost">
-        <button class="btn btn-warning btn-lg" ng-click="startGame()">開始遊戲</button>
-      </div>
-      <!-- end of temp -->
       <div ng-show="state.allRoleAssigned">
         <div ng-show="currentUser.isHost">
           <button class="btn btn-warning btn-lg" ng-click="startGame()">開始遊戲</button>
         </div>
         <div ng-show="!currentUser.isHost">
-          等待 {{agents.$indexFor(0).nickname}} 開始遊戲
+          等待遊戲開始
         </div>
       </div>
       <div ng-show="localState.agentFull && state.playing">
@@ -81,7 +107,7 @@
     </div>
   </div>
 
-  <div class="game">
+  <div class="game" ng-show="localState.gameStarted">
     <!-- map -->
     <div class="map">
       <div class="map-background map-background-image" style="height:{{mapHeight}}px;"></div>
@@ -112,7 +138,7 @@
       </div>
     </div>
     <div class="dashboard">
-      <div class="boards-background"></div>
+      <!-- <div class="boards-background"></div> -->
       <div class="boards">
         <div class="score-board padding-top padding-left">
           <span class="score-info" ng-repeat="role in roles">
@@ -121,7 +147,7 @@
           </span>
         </div>
         <div class="instruction-board padding-top padding-left">
-          {{state.currentStage.instruction}}
+          {{state.currentStage.instruction}} 剩餘時間{{localState.countDown}}秒
         </div>
         <div class="telegraph-board">
           <div class="telegraph-box padding"
@@ -131,13 +157,13 @@
               ng-show="localState.showRoleInstruction"
               ng-click="localState.showRoleInstruction = false">
               <div ng-show="currentUser.role.isRed">
-                  你是紅方，你的目標是殲滅上面地圖中的藍方領土，你可以傳送一個簡短有意義的英文單字給轟炸機，讓他看到後會聯想到上面藍色區域的代碼，比如你看到藍方有 sky 和 sea 的時候你可以傳 blue，轟炸機最多有四次轟炸機會。
+                  你是紅方，你的目標是殲滅上面地圖中的藍方領土，你可以傳送一個簡短有意義的英文單字給第三方轟炸機，讓他看到後會聯想到上面藍色的區域代碼，比如你看到藍方有 sky 和 sea 的時候你可以傳 blue，轟炸機最多有四次轟炸機會。
               </div>
               <div ng-show="currentUser.role.isBlue">
-                  你是藍方，你的目標是殲滅上面地圖中的紅方領土，你可以傳送一個簡短有意義的英文單字給轟炸機，讓他看到後會聯想到上面紅色區域的代碼，比如你看到紅方有 blood 和 tomato 的時候你可以傳 red，轟炸機最多有四次轟炸機會。
+                  你是藍方，你的目標是殲滅上面地圖中的紅方領土，你可以傳送一個簡短有意義的英文單字給第三方轟炸機，讓他看到後會聯想到上面紅色的區域代碼，比如你看到紅方有 blood 和 tomato 的時候你可以傳 red，轟炸機最多有四次轟炸機會。
               </div>
               <div ng-show="currentUser.role.isBomber">
-                  你是武力強大的第三勢力，你會收到紅方或藍方進攻對方的提示，你根據這個提示猜測他們想要轟炸對方的區域給予轟炸，每個提示最多有四次轟炸機會。假設你依據紅方指示正確幫紅方打中藍方佔領區，則你和紅方可以共同佔領該區；打到平民區則會結束該回合；配合紅方打到紅方自己人則該區損毀並結束該回合。
+                  你是武力強大的第三勢力，你會收到紅方或藍方進攻對方的提示，你根據這個提示猜測他們想要轟炸對方的區域給予轟炸，每個提示最多有四次轟炸機會。假設你依據紅方指示正確幫紅方打中藍方據點，則你和紅方可以共同佔領該區；打到平民區則會結束該回合；配合紅方打到紅方自己人則該區損毀並結束該回合。
               </div>
             </div>
 
@@ -154,7 +180,6 @@
               </label>
               <button class="btn btn-warning" ng-click="sendTelegraph()">
                 發送電報
-                剩餘 <span ng-class="{'count-down-ending':localState.countDown < 10}">{{localState.countDown}}</span> 秒
               </button>
             </div>
 

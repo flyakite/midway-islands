@@ -1,4 +1,18 @@
 angular.module('app.services', [])
+.service('AppService', [function() {
+   
+  var service = {
+    showLoading: function() {
+      var el = document.getElementById('loading');
+      el.className = 'loading-active';
+    },
+    hideLoading: function() {
+      var el = document.getElementById('loading');
+      el.className = 'loading-inactive';
+    }
+  };
+  return service;
+}])
 .factory('DataStore', function($q, $http, ParseConfiguration) {
   
   function useParseDate(data) {

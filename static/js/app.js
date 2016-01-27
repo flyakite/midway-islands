@@ -11,9 +11,9 @@ angular.module('backend', [
 ])
 
 .value('ParseConfiguration', {
-  applicationId: 'uaaUjhYFj6aGR1Fy6wLYeYM7vUlYPTXMemOq7iwk',
-  javascriptKey: 'VrYJzohSqDD2zi8NgPR1FeZUI1u9TWaa4yFqwWCC',
-  restKey: 'VrYJzohSqDD2zi8NgPR1FeZUI1u9TWaa4yFqwWCC',
+  applicationId: '',
+  javascriptKey: '',
+  restKey: '',
   sessionToken: ''
 })
 
