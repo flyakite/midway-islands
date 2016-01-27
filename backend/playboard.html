@@ -96,9 +96,9 @@
       <div ng-show="!state.allPlayerJoined">
         等待其他玩家....
       </div>
-      <div ng-show="state.allRoleAssigned">
+      <div ng-show="state.allRoleAssigned" class="padding-2">
         <div ng-show="currentUser.isHost">
-          <button class="btn btn-warning btn-lg" ng-click="startGame()">開始遊戲</button>
+          <button class="btn btn-warning btn-lg btn-block" ng-click="startGame()">開始遊戲</button>
         </div>
         <div ng-show="!currentUser.isHost">
           等待遊戲開始
