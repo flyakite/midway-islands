@@ -520,7 +520,7 @@ angular.module('controllers', [])
       console.log('hideMessage');
       $scope.showPopupMessage = false;
       $scope.$apply();
-    }, 3000)
+    }, 5000)
   }
 
   $scope.hideMessage = function() {
