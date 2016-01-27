@@ -77,14 +77,17 @@
         {{role.name}}
       </button>
 
-      <div>（你可以分享這個網頁的連結，邀請你的朋友加入）</div>
+      <div>（你可以分享這個網頁的連結，邀請你的朋友加入這場遊戲）</div>
     </div>
     <div class="agents-list">
       <!-- <span class="mission-number">任務編號：{{island.number}}</span> -->
-      <h4>玩家名單</h4>
+      <h4>已加入的玩家</h4>
       <div class="agent" ng-repeat="agent in agents">
         <span>{{agent.nickname}}</span>
-        <span>{{agent.role.name}}</span>
+        <span 
+          ng-class="{'red-text':agent.role.isRed, 'blue-text':agent.role.isBlue}">
+          {{agent.role.name}}
+        </span>
       </div>
     </div>
 
