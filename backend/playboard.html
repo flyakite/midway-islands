@@ -79,7 +79,6 @@
         {{role.name}}
       </button>
 
-      <div>（你可以分享這個網頁的連結，邀請你的朋友加入這場遊戲）</div>
     </div>
     <div class="agents-list">
       <!-- <span class="mission-number">任務編號：{{island.number}}</span> -->
@@ -94,11 +93,12 @@
     </div>
 
 
-    <div class="instruction-section">
+    <div class="instruction-section padding-2">
       <div ng-show="!state.allPlayerJoined">
-        等待其他玩家....
+        等待其他玩家加入....
+        <div>（你可以分享這個網頁的連結，邀請你的朋友加入這場遊戲）</div>
       </div>
-      <div ng-show="state.allRoleAssigned" class="padding-2">
+      <div ng-show="state.allRoleAssigned">
         <div ng-show="currentUser.isHost">
           <button class="btn btn-warning btn-lg btn-block" ng-click="startGame()">開始遊戲</button>
         </div>
