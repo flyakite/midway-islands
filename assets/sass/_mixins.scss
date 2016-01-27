@@ -1,0 +1,44 @@
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius !important;
+     -moz-border-radius: $radius !important;
+      -ms-border-radius: $radius !important;
+          border-radius: $radius !important;
+}
+
+@mixin border-top-radius($radius) {
+  -webkit-border-top-right-radius: $radius !important;
+     -moz-border-top-right-radius: $radius !important;
+      -ms-border-top-right-radius: $radius !important;
+          border-top-right-radius: $radius !important;
+  -webkit-border-top-left-radius: $radius !important;
+     -moz-border-top-left-radius: $radius !important;
+      -ms-border-top-left-radius: $radius !important;
+          border-top-left-radius: $radius !important;
+}
+
+@mixin border-bottom-radius($radius) {
+  -webkit-border-bottom-right-radius: $radius !important;
+     -moz-border-bottom-right-radius: $radius !important;
+      -ms-border-bottom-right-radius: $radius !important;
+          border-bottom-right-radius: $radius !important;
+  -webkit-border-bottom-left-radius: $radius !important;
+     -moz-border-bottom-left-radius: $radius !important;
+      -ms-border-bottom-left-radius: $radius !important;
+          border-bottom-left-radius: $radius !important;
+}
+
+@mixin filter($value) {
+  -webkit-filter: blur($value);
+  -moz-filter: blur($value);
+  -o-filter: blur($value);
+  -ms-filter: blur($value);
+  filter: blur($value);
+}
+
+@mixin my-transition($value, $value2) {
+  -webkit-transition: $value, $value2;
+  -moz-transition: $value, $value2;
+  -o-transition: $value, $value2;
+  -ms-transition: $value, $value2;
+  transition: $value, $value2;
+}

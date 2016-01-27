@@ -1,0 +1,19 @@
+{
+  "name": "modernizr-min",
+  "version": "3.1.0",
+  "homepage": "https://github.com/chatii2412/modernizr-min",
+  "authors": [
+    "Wooram Jun"
+  ],
+  "description": "Minified version of Modernizr.",
+  "keywords": [
+    "modernizr"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "node_modules/",
+    "original/",
+    "Gruntfile.js",
+    ".git*"
+  ]
+}
